@@ -1,0 +1,13 @@
+{
+    "intents": [
+        {
+            "label": "BOOK_COURT",
+            "patterns": [
+                "I'd like to book a tennis court",
+                "Book me a court for friday"
+            ]
+        }
+    ]
+
+
+}
