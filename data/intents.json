@@ -4,9 +4,107 @@
             "label": "BOOK_COURT",
             "patterns": [
                 "I'd like to book a tennis court",
-                "Book me a court for friday"
+                "Book me a court for friday",
+                "I want to play football tomorrow.",
+                "Book me a court for Friday.",
+                "I'd like to make a reservation",
+                "Could I get a tennis court at 5 pm?",
+                "I need a badminton court for an hour.",
+                "Is it possible to book a court tonight?",
+                "I'd like to reserve a court for next week.",
+                "I'd like to arrange a game of tennis.",
+                "can you help me book a court?"
             ]
+        },
+
+        {
+            "label": "CANCEL_BOOKING",
+            "patterns": [
+                "I need to cancel my court booking",
+                "Can I cancel my reservation?",
+                "I want to cancel my court for tomorrow.",
+                "Please cancel my booking for Friday.",
+                "I need to cancel my football reservation.",
+                "Can you help me cancel my tennis court?",
+                "I want to cancel my tennis court reservation.",
+                "I'd like to cancel my court for next week.",
+                "I need to cancel my court for tonight.",
+                "Please help me cancel my court booking."
+            ]
+        },
+
+        {
+            "label": "CHECK_AVAILABILITY",
+            "patterns": [
+                "Is there a tennis court available on Friday?",
+                "Can I check the availability of football courts?",
+                "I want to see if badminton courts are free tomorrow.",
+                "Are there any tennis courts open for booking?",
+                "I'd like to know if there's a court available tonight.",
+                "Can you tell me if there's a football court free next week?",
+                "I need to check if a badminton court is available.",
+                "Are there any tennis courts available for reservation?",
+                "I'd like to check the availability of courts for Friday.",
+                "Can you help me find out if a court is free?"
+            ]
+        },
+
+        {
+            "label": "VIEW_BOOKINGS",
+            "patterns": [
+                "I want to see my court bookings",
+                "Can you show me my reservations?",
+                "I'd like to view my tennis court bookings.",
+                "Please display my football court reservations.",
+                "I need to check my badminton court bookings.",
+                "Can you help me see my court reservations?",
+                "I'd like to review my tennis court bookings.",
+                "Please show me my football court reservations.",
+                "I want to check my badminton court bookings.",
+                "Can you display my court reservations for me?"
+            ]
+        },
+
+        {
+            "label": "INFORMATIONS",
+            "patterns":[
+                "What time do you open?",
+                "What are your opening hours?",
+                "When do you close?",
+                "What are your closing hours?",
+                "What sports do you offer?",
+                "Do you have tennis courts?",
+                "Do you have football fields?",
+                "Do you have badminton courts?",
+                "What is the price for booking a court?",
+                "How much does it cost to book a court?",
+                "What are the fees for reserving a court?",
+                "What faculities do you have?",
+                "What amenities are available at your sports center?",
+                "Do you have locker rooms?",
+                "Is there a parking lot available?",
+                "Do you have showers for players?"
+            ]
+        },
+
+        {
+          "label": "HELP",
+          "patterns": [
+                "Help",
+                "What can you do",
+                "How does this work",
+                "What can I ask you",
+                "What are your capabilities",
+                "I don't know what to do",
+                "I need assistance",
+                "How do i make a booking",
+                "How do i cancel a booking",
+                "Can you guide me through the booking process",
+                "Can you help me with the booking process"
+            ]  
         }
+
+
     ]
 
 
