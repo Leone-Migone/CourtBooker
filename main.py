@@ -73,6 +73,21 @@ NUMBER_WORDS = {
 
 
 
+def predict_intent(text):
+    count_vector = count_vectorizer.transform([text])
+    tfidf_transformer = tfidf_transformer.transform(count_vector)
+    probabilities = classifier.predict_proba(tfidf_transformer)[0]
+    # get the confidence of the prediction
+    confidence = max(probabilities)
+    # get intent with highest probability 
+    predicted_intent = classifier.classes_[probabilities.argmax()]
+
+    # if the confidence is below a certain threshold, return None and ask for more information
+    if confidence < 0.5:
+        return None, confidence
+    
+    return predicted_intent, confidence
+
 def extract_slots(text):
     slots = {
         "sport": None,
