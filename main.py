@@ -7,6 +7,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, T
 from sklearn.metrics import classification_report, accuracy_score
 import re
 from datetime import datetime, timedelta
+from qa import answer_question
+
 
 with open("./data/intents.json") as file:
     data = json.load(file)
@@ -233,6 +235,15 @@ def chatbot_response(user_input):
 
         return f"Nice to meet you, {conversation['name']}!"
 
+
+    #Recall the user's name
+    if lower_text in ["what is my name?", "what is my name",
+                      "what's my name?", "what's my name", "whats my name?"]:
+        if conversation["name"]:
+            return f"Your name is {conversation['name']}."
+        conversation["awaiting_name"] = True
+        return "I don't know your name yet. What should I call you?"
+    
     #Handle answers to "What's your name?"
     if conversation["awaiting_name"]:
         if re.fullmatch(r"[a-zA-Z]+", text):
@@ -243,16 +254,10 @@ def chatbot_response(user_input):
 
         return "Sorry, could you tell me just your first name?"
 
-    #Recall the user's name
-    if lower_text in ["what is my name?", "what is my name",
-                      "what's my name?", "what's my name", "whats my name?"]:
-        if conversation["name"]:
-            return f"Your name is {conversation['name']}."
-
-        return "I don't know your name yet. What should I call you?"
 
     #classify the intent of the user input
     intent, confidence = predict_intent(text)
+    print(f"DEBUG: Intent = {intent}, Confidence = {confidence:.3f}")
 
     if intent == "HELP":
         return (
@@ -261,7 +266,17 @@ def chatbot_response(user_input):
             "What would you like to do?"
         )
 
+    if intent == "SMALL_TALK":
+        return "I'm doing well, thanks for asking! How can I help you?"
+    
+    
+    # try retrieving  answer from the QA dataset
+    answer = answer_question(user_input)
+    
+    if answer is not None:
+        return answer
     # temps for other intents
+    
     if intent == "BOOK_COURT":
         return "Sure! I can help you book a court."
 
@@ -277,6 +292,9 @@ def chatbot_response(user_input):
     if intent == "INFORMATIONS":
         return "What would you like to know about our sports centre?"
 
+    if intent == "HELP":
+        return "I can help you book sports courts, check availability, cancel reservations, and view your bookings, What would you like to do?"
+        
     return "Sorry, I didn't understand. Could you rephrase that?"
 
 def main():
