@@ -188,7 +188,10 @@
           "label": "HELP",
           "patterns": [
                 "Help",
-                "What can you do",
+                "i need help",
+                "Help me",
+                "Help me pls",
+                "What can you do?",
                 "How does this work",
                 "What can I ask you",
                 "What are your capabilities",
@@ -219,6 +222,39 @@
                 "How can this assistant help with court reservations?",
                 "Is there a help menu?"
             ]  
+        },
+        
+        {
+            "label": "SMALL_TALK",
+            "patterns": [
+                "How are you?",
+                "How are you doing?",
+                "How's it going?",
+                "Are you doing well?",
+                "How have you been?",
+                "How are things?",
+                "What's up?",
+                "How's everything?",
+                "How's life treating you?",
+                "How's your day going?",
+                "How's your week been?",
+                "How's your weekend?",
+                "How's your morning?",
+                "How's your afternoon?",
+                "How's your evening?",
+                "How's your night?",
+                "How's your day been?",
+                "How's your week going?",
+                "How's your weekend going?",
+                "How's your morning going?",
+                "How's your afternoon going?",
+                "How's your evening going?",
+                "How's your night going?",
+                "How's your day treating you?",
+                "How's your week treating you?",
+                "How's your weekend treating you?",
+                "How's your morning treating you?"
+            ]
         }
 
 
