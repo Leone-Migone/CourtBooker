@@ -3,7 +3,7 @@ import json
 from nltk.tokenize import word_tokenize
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer
 from sklearn.metrics import classification_report, accuracy_score
 import re
 from datetime import datetime, timedelta
@@ -75,15 +75,16 @@ NUMBER_WORDS = {
 
 def predict_intent(text):
     count_vector = count_vectorizer.transform([text])
-    tfidf_transformer = tfidf_transformer.transform(count_vector)
-    probabilities = classifier.predict_proba(tfidf_transformer)[0]
+    tfidf = tfidf_transformer.transform(count_vector)
+
+    probabilities = classifier.predict_proba(tfidf)[0]
     # get the confidence of the prediction
     confidence = max(probabilities)
     # get intent with highest probability 
     predicted_intent = classifier.classes_[probabilities.argmax()]
 
     # if the confidence is below a certain threshold, return None and ask for more information
-    if confidence < 0.5:
+    if confidence < 0.35:
         return None, confidence
     
     return predicted_intent, confidence
@@ -191,6 +192,110 @@ examples = [
 
 for sentence in examples:
     print(sentence)
-    print(extract_slots(sentence))
+    intent, confidence = predict_intent(sentence)
+    print(confidence,intent)
+    if intent is None:
+        print("I'm not sure what you mean. Could you please provide more details?")
+    elif intent == "BOOK_COURT":
+        print(extract_slots(sentence))
+    
+
+# conversation state to keep track of name
+conversation = {
+    "name": None,
+    "awaiting_name": False
+}
 
 
+
+def chatbot_response(user_input):
+    text = user_input.strip()
+    lower_text = text.lower()
+
+    # Handle greetings
+    if lower_text in ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"]:
+        if conversation["name"] is None:
+            conversation["awaiting_name"] = True
+            return "Hello! Welcome to the Sports Centre Booking System. What's your name?"
+
+        return f"Hello {conversation['name']}! How can I help you?"
+
+    #Handle name 
+    name_match = re.search(
+        r"\b(?:my name is|call me|i am|i'm|im)\s+([a-zA-Z]+)\b",
+        text,
+        re.IGNORECASE
+    )
+    
+    if name_match:
+        conversation["name"] = name_match.group(1).capitalize()
+        conversation["awaiting_name"] = False
+
+        return f"Nice to meet you, {conversation['name']}!"
+
+    #Handle answers to "What's your name?"
+    if conversation["awaiting_name"]:
+        if re.fullmatch(r"[a-zA-Z]+", text):
+            conversation["name"] = text.capitalize()
+            conversation["awaiting_name"] = False
+
+            return f"Nice to meet you, {conversation['name']}!"
+
+        return "Sorry, could you tell me just your first name?"
+
+    #Recall the user's name
+    if lower_text in ["what is my name?", "what is my name",
+                      "what's my name?", "what's my name", "whats my name?"]:
+        if conversation["name"]:
+            return f"Your name is {conversation['name']}."
+
+        return "I don't know your name yet. What should I call you?"
+
+    #classify the intent of the user input
+    intent, confidence = predict_intent(text)
+
+    if intent == "HELP":
+        return (
+            "I can help you book sports courts, check availability, "
+            "cancel reservations, and view your bookings. "
+            "What would you like to do?"
+        )
+
+    # temps for other intents
+    if intent == "BOOK_COURT":
+        return "Sure! I can help you book a court."
+
+    if intent == "CHECK_AVAILABILITY":
+        return "I can help you check which courts are available."
+
+    if intent == "CANCEL_BOOKING":
+        return "I can help you cancel a reservation."
+
+    if intent == "VIEW_BOOKINGS":
+        return "I can help you view your existing bookings."
+
+    if intent == "INFORMATIONS":
+        return "What would you like to know about our sports centre?"
+
+    return "Sorry, I didn't understand. Could you rephrase that?"
+
+def main():
+    print("Welcome to the Sports Centre Chatbot!")
+    print("Type 'exit' to quit.\n")
+
+    while True:
+        user_input = input("You: ").strip()
+
+        if user_input.lower() in ["exit", "quit", "bye"]:
+            print("Bot: Goodbye!")
+            break
+
+        if not user_input:
+            continue
+
+        response = chatbot_response(user_input)
+        print(f"Bot: {response}")
+
+
+if __name__ == "__main__":
+    main()
