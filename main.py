@@ -205,9 +205,71 @@ for sentence in examples:
 # conversation state to keep track of name
 conversation = {
     "name": None,
-    "awaiting_name": False
+    "state": None,
+    "intent": None,
+    "awaiting_name": False,
+    "awaiting_slots": False,
+    "slots": {
+        "sport": None,
+        "date": None,
+        "time": None,
+        "duration": None
+    }
+} 
+
+
+prompts_for_slots = {
+    "sport": "Which sport would you like to play? We have tennis, badminton, and football.",
+    "date": "When would you like to book the court?",
+    "time": "What time would you like to book the court?",
+    "duration": "How long would you like to book the court for?"
 }
 
+# check for missing slots and return the first missing slot and its corresponding prompt to ask the user to input it
+def missing_slots_handler(slots):
+    for slot, q in prompts_for_slots.items():
+        if slots[slot] is None:
+            return slot,q
+    return None, None   
+
+# reset the conversation state
+def reset_conversation():
+    conversation["intent"] = None
+    conversation["state"] = None
+    conversation["awaiting_slots"] = False
+    conversation["slots"] = {
+        "sport": None,
+        "date": None,
+        "time": None,
+        "duration": None
+    }
+
+def handle_booking(user_input):
+    # extract slots from user input
+    extracted_slots = extract_slots(user_input)
+
+    # update only slots with value
+    for slot, value in extracted_slots.items():
+        if value is not None:
+            conversation["slots"][slot] = value
+    
+
+    # check for missing slots
+    missing_slot, prompt = missing_slots_handler(conversation["slots"])
+
+    if missing_slot:
+        conversation["awaiting_slots"] = True
+        return prompt
+
+    conversation["awaiting_slots"] = False
+    conversation["state"] = "AWAITING_CONFIRMATION"
+
+    slots = conversation['slots']
+    # all slots are filled so process booking
+    return (
+        f"Perfect so you would like to book for {slots['sport']} on the {slots['date']} at {slots['time']} for {slots['duration']} minutes."
+        f"Do you confirm this is correct? (yes/no)"
+    )
 
 
 def chatbot_response(user_input):
@@ -255,6 +317,20 @@ def chatbot_response(user_input):
         return "Sorry, could you tell me just your first name?"
 
 
+    if conversation["state"] == "SLOTS_COLLECTION":
+        return handle_booking(text)
+    # handles booking confirmations
+    if conversation["state"] == "AWAITING_CONFIRMATION":
+        if lower_text == "yes": 
+            slots = conversation["slots"].copy()
+            reset_conversation()
+            return (f"booking confirmed for {slots['sport']} on the {slots['date']} at {slots['time']}")
+        elif lower_text == "no":
+            reset_conversation()
+            return("booking request cancelled. How can I help?")
+        return "Please answer with yes or no only. Do you want to confirm the booking?"
+
+    
     #classify the intent of the user input
     intent, confidence = predict_intent(text)
     print(f"DEBUG: Intent = {intent}, Confidence = {confidence:.3f}")
@@ -278,8 +354,11 @@ def chatbot_response(user_input):
     # temps for other intents
     
     if intent == "BOOK_COURT":
-        return "Sure! I can help you book a court."
-
+        reset_conversation()
+        conversation["state"] = "SLOTS_COLLECTION"
+        conversation["intent"] = "BOOK_COURT"
+        return handle_booking(text)
+    
     if intent == "CHECK_AVAILABILITY":
         return "I can help you check which courts are available."
 
